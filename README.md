@@ -36,6 +36,10 @@ An unofficial, experimental UWP launcher for Xbox Developer Mode. Transfer a sup
 - Compact controller-friendly layout with display-safe margins and scaled QR cards.
 - Support for a separate runtime or an optional combined package built using matching external runtime inputs.
 
+## Modding (community tools)
+
+[`mod-tools/`](mod-tools/) has a small, self-contained toolkit for making gameplay mods — swing speed, gravity, traversal, web-zip boosts and more — from the game files already prepared on your own console. It reads them over the Developer Mode share, so no PC copy of the game is needed, and it ships **no game assets or bytecode**. It also includes `mapfix`, a one-command correction for the early fast-travel tutorial that can freeze on offline/emulated builds. See the [mod-tools README](mod-tools/README.md).
+
 ## Supported versions
 
 | Game version | Steam build | Support |
