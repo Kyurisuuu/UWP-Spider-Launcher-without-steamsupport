@@ -3,28 +3,29 @@
 # Not meant for normal play.
 
 [configs\hero\hero_swingconfig.config]
-# Top swing speed and how fast a swing builds up.
-MotionParamsStandard.SpeedParams.TerminalVelocity* *= 3
-MotionParamsFast.SpeedParams.TerminalVelocity* *= 3
-MotionParamsStandard.SpeedParams.SpeedBoostAccel *= 3
-MotionParamsStandard.SpeedParams.SpeedBoostTarget *= 3
+# Top swing speed and build-up. Applied to ALL swing contexts now (standard,
+# fast, near-ground, indoor) so speed no longer drops off low to the ground or
+# past buildings. That drop-off was the "sometimes it gets slow".
+MotionParams*.SpeedParams.TerminalVelocity* *= 3
+MotionParams*.SpeedParams.SpeedBoostAccel *= 3
+MotionParams*.SpeedParams.SpeedBoostTarget *= 3
 MomentumConfig.*BoostCap *= 3
 
 # Speed coming out of a swing (letting go, or jumping off the web).
-MotionParamsStandard.SpeedParams.ReleaseBoostXZ *= 2.5
-MotionParamsFast.SpeedParams.ReleaseBoostXZ *= 2.5
-MotionParamsStandard.SpeedParams.JumpBoostXZ *= 2.5
-MotionParamsFast.SpeedParams.JumpBoostXZ *= 2.5
+MotionParams*.SpeedParams.ReleaseBoostXZ *= 2.5
+MotionParams*.SpeedParams.JumpBoostXZ *= 2.5
 MomentumConfig.SwingReleaseData.ReleaseData.Boost *= 3
 MomentumConfig.SwingReleaseData.JumpData.Boost *= 2
 
-# Keep all incoming speed when a swing starts (normally 0.85, or 0.7 when fast).
-MotionParamsStandard.SpeedParams.InSpeedCarryover = 1
-MotionParamsFast.SpeedParams.InSpeedCarryover = 1
-JumpFromFallHorzDamp = 1
-# Momentum fades slower in the air.
-MomentumConfig.DecayDataAir[*].DecayRate *= 0.4
+# Keep all incoming speed when a swing starts (standard/fast sets have this).
+MotionParams*.SpeedParams.InSpeedCarryover = 1
+JumpFromFallHorzDamp = 2
+# Air momentum decay rate (0.4 was 40% of normal; 0.8 fades a bit faster).
+MomentumConfig.DecayDataAir[*].DecayRate *= 0.8
 MomentumConfig.DecayDataAir[*].DecayDelay *= 2
+
+# Experiment: slightly stronger fall gravity while swinging, all contexts (1.25x).
+MotionParams*.GravityParams.GravityFall* *= 1.25
 
 [configs\hero\hero_webzipsetup_outdoor.config]
 SpeedBoostForward* *= 3
@@ -41,9 +42,16 @@ SpeedBoostForward* *= 3
 # Point launch: launch speed and the bonus for timing it, all directions. 2x.
 PointLaunchConfig.ExitData*.LaunchSpeed *= 2
 PointLaunchConfig.ExitData*.LaunchSpeedBonus *= 2
-# Wall-run corner jump: sideways speed around the corner, and how hard it accelerates. 2x.
-WallRunConfig.CornerJumpParams.HorzSpeed *= 2
-JumpConfigs.WallRunCornerHookConfig.StandardData.VelocityAccelAccel* *= 2
-# Charge jump (the game calls it a parkour launch): top launch speed and height. 2x.
+# Wall-run corner (press jump while wall-running horizontally): sideways speed and acceleration.
+WallRunConfig.CornerJumpParams.HorzSpeed *= 4
+JumpConfigs.WallRunCornerHookConfig.StandardData.VelocityAccelAccel* *= 3
+# Ledge/run launch (parkour launch off a ledge): top launch speed and height.
 JumpConfigs.ParkourLaunchJumpSpeed.*MaxLaunchSpeed *= 2
 JumpConfigs.ParkourLaunchConfig.*JumpHeight *= 2
+# Charge jump: the standing hold-jump leap height (this also raises the normal jump). 2x.
+JumpConfigs.SingleJumpConfig.*JumpHeight *= 2
+# Quick recovery when landing from a fall: launch speed way up.
+JumpConfigs.RollLandLaunchSpeed.StandardData.*LaunchSpeed *= 2
+# Wall-run vault (run up a wall, press jump at the top to fling forward): 2.5x.
+WallRunConfig.CrestVaultData.OutSpeedMin *= 2.5
+JumpConfigs.WallRunVaultTopJumpConfig.StandardData.VelocityAccelAccel* *= 2.5

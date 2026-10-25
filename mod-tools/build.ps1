@@ -25,7 +25,7 @@ try {
         Copy-Item -LiteralPath (Join-Path $unpacked $dll) -Destination 'bin' -Force
     }
     # WINDOWS_UWP only selects the kernel32 free-space query and drops AssetGenerator's own entry point.
-    $source = @('SpiderModTool.cs','ConfigFile.cs','..\asset-preparation\ModOverlay.cs','..\asset-preparation\AssetGenerator.cs','..\asset-preparation\ModelLod.cs','..\asset-preparation\ResampledTexture.cs')
+    $source = @('SpiderModTool.cs','ConfigFile.cs','..\asset-preparation\ModOverlay.cs','..\asset-preparation\MapTravelPreparation.cs','..\asset-preparation\AssetGenerator.cs','..\asset-preparation\ModelLod.cs','..\asset-preparation\ResampledTexture.cs')
     $references = @('/r:bin\K4os.Compression.LZ4.dll','/r:bin\System.Memory.dll','/r:System.IO.Compression.dll','/r:System.IO.Compression.FileSystem.dll')
     & $compiler /nologo /target:exe /optimize+ /platform:x64 /define:WINDOWS_UWP /main:ModTools.SpiderModTool /out:bin\SpiderModTool.exe @references @source
     if ($LASTEXITCODE -ne 0) { throw 'SpiderModTool build failed.' }

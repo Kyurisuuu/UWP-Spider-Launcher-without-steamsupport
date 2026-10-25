@@ -27,6 +27,7 @@ namespace ModTools
                     case "grep":Grep(Need(args,1,"text"),Opt(args,2,DefaultXbox));return 0;
                     case "apply":Apply(Opt(args,1,DefaultXbox),Opt(args,2,null));return 0;
                     case "remove":Remove(Opt(args,1,DefaultXbox));return 0;
+                    case "mapfix":MapFix(Opt(args,1,DefaultXbox));return 0;
                 }
                 Usage();return 1;
             } catch(Exception e) {
@@ -45,7 +46,9 @@ namespace ModTools
   build <recipe> [out]    Apply a recipe's edits and pack a .stage mod.
   apply [game] [mods]     Apply every mod in the Xbox mods folder to the prepared game.
   remove [game]           Remove applied mods and restore the prepared game exactly.
-                          Close the game on the Xbox before apply or remove.
+  mapfix [game]           Apply the fast-travel tutorial correction to your own Map.gfx
+                          (verifies your game build; backs up the toc first).
+                          Close the game on the Xbox before apply, remove or mapfix.
 
 [game] is the Xbox runtime folder over the network share (default
 "+DefaultXbox+@")
@@ -206,6 +209,20 @@ or a PC install folder containing asset_archive. Run index first.");
         {
             string toc,backup;Prepared(root,out toc,out backup);
             Console.WriteLine(ModOverlay.Remove(toc,backup)?"Mods removed. The prepared game is restored.":"No mods were applied.");
+        }
+
+        // Applies the fast-travel tutorial correction to your own Map.gfx. It verifies
+        // your game build by hash, backs up the toc, and is transactional. See
+        // MapTravelPreparation (authored upstream by BBCPrince/UWP-Spider-Launcher).
+        static void MapFix(string root)
+        {
+            if(!File.Exists(Path.Combine(root,"prepared-receipt.txt")))throw new FileNotFoundException("No prepared game at "+root+". Prepare the game in the launcher first.");
+            string runtimeAssets=Path.Combine(root,"StartupContent","asset_archive");
+            string ownedIndex=Path.Combine(root,"original-asset-toc");
+            bool changed=MapTravelPreparation.Ensure(runtimeAssets,runtimeAssets,Console.WriteLine,System.Threading.CancellationToken.None,ownedIndex);
+            Console.WriteLine(changed
+                ? "Fast-travel map fix applied. The map tutorial can now start its hold timer. (backup: toc.before-map-travel-v1)"
+                : "Already fixed — no change needed.");
         }
 
         // Recipe:

@@ -35,8 +35,11 @@ First save the share login once, as described in Device Portal → File explorer
 ```powershell
 bin\SpiderModTool.exe index                       # name the game's assets (one time)
 bin\SpiderModTool.exe find swing                  # search asset names
+bin\SpiderModTool.exe grep GravityFall            # search inside every .config for a value name
 bin\SpiderModTool.exe dump configs\hero\hero_swingconfig.config   # list every value
 bin\SpiderModTool.exe build recipes\faster-swinging.txt bin\faster-swinging.stage
+bin\SpiderModTool.exe apply                        # apply every mod in the Xbox mods folder
+bin\SpiderModTool.exe remove                       # remove all mods, restore the game exactly
 ```
 
 If your Xbox has a different IP address, pass the runtime folder:
@@ -71,3 +74,22 @@ Gravity values are negative, so multiplying by more than 1 pulls harder. Text va
 Copy the `.stage` file to `\\<Xbox IP>\DevelopmentFiles\SpiderManInstaller-Mods`. Then, in the launcher, open **Mods** and choose **Apply mods**. See [docs/MODS.md](../docs/MODS.md).
 
 Don't share or commit built `.stage` files. They contain game data.
+
+## Fast-travel tutorial fix
+
+Some builds freeze on the early forced fast-travel tutorial: the map opens, zoom and panning work, but holding the confirm button does nothing and never fast-travels. It's a bug in the map UI's eligibility check (it treats the game's offline/emulated state as "can't travel", so the hold timer never starts). The correction is carried in [`../asset-preparation/MapTravelPreparation.cs`](../asset-preparation/MapTravelPreparation.cs), authored upstream by **BBCPrince/UWP-Spider-Launcher** (commit `1865c248`, GPL-3.0).
+
+Close the game, then:
+
+```powershell
+bin\SpiderModTool.exe mapfix
+```
+
+It verifies your game build by hash before changing anything, backs up the `toc`, and is transactional. It only touches your own `Map.gfx` on the console; no game bytecode is distributed here. Power-cycle the Xbox afterward. (If your launcher is build 0.6.0.56 or newer, it already applies this on Play and you don't need this command.)
+
+## What this is, and what it isn't
+
+- It's **modding tooling** you point at **your own** copy of the game. It reads the files already on your console; it ships **no game assets, configs, textures or bytecode**.
+- Mods are **overlays** — extra archives plus a rerouted index. Your original game files are untouched, backups are kept, and `remove` / restoring the backup `toc` undoes everything. A launcher re-prepare or reinstall will clear mods; just re-apply.
+- Licensed **GPL-3.0**. The config format code is adapted from Tkachov's **ALERT** and **Overstrike** (GPL-3.0); the map fix is from **BBCPrince/UWP-Spider-Launcher** (GPL-3.0). Keep those credits if you fork.
+- **Do not commit** the `bin/` output, the `cache/` asset names, or any `.stage` files — those are built from game data. They're git-ignored for that reason.
