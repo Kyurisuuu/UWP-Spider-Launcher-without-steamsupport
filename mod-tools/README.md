@@ -1,102 +1,125 @@
-# SpiderModTool
+# 🕷️ Spider Mods — swing like never before
 
-Makes `.stage` config mods, such as swing speed, gravity and web-zip boosts, from the game files already prepared on your Xbox. It reads them over the Developer Mode network share, so you don't need a PC copy of the game. It never writes to the Xbox.
+Make web-swinging **genuinely, ridiculously fast.** These tools build gameplay mods — top swing speed, momentum, gravity, point launches, wall-run vaults, charge jumps — straight from the game files already prepared on your own Xbox. No PC copy of the game needed, and **no game files are shipped here** — you bring your own.
 
-Because it reads the Xbox's own files, a mod always matches the exact game version on the console.
+> **The Extreme preset triples your top swing speed and keeps every bit of momentum through dives, turns and zips.** Once it clicks, you're flowing across the city faster than anything in Spider-Man 2 — no stalls, no slow-downs, just uninterrupted speed.
 
-## Build
+## What it does
 
-Uses the C# compiler that comes with Windows, so Visual Studio isn't needed.
+- ⚡ **Soar faster** — up to **3× top swing speed**, faster build-up, and momentum that actually *carries* out of a dive and into the next swing instead of bleeding away.
+- 🚀 **Bigger launches** — point launches, wall-run vaults and charge jumps tuned to fling you clear across rooftops.
+- 🪁 **Tune the feel** — floaty or heavy gravity, stronger zip boosts, slower momentum decay, and more. Every value is yours to set.
+- 🔒 **Safe & reversible** — mods are an *overlay* on top of your game. Your original files are never changed, and one command puts everything back exactly.
+
+**Two ready-made presets:**
+
+| Preset | Feel |
+| --- | --- |
+| `faster-swinging` | A tasteful "better vanilla" — quicker, smoother, keeps its momentum. |
+| `extreme-test` | The showcase. Maxed speed, launches and traversal. This is the *faster-than-Spider-Man-2* one. |
+
+## What you need
+
+- A **Windows PC**.
+- An **Xbox in Developer Mode** with the launcher installed and your own copy of the game prepared.
+- Both on the **same home network**.
+
+The tool only ever reads *your* console's files — it ships no game data.
+
+## Install (about 5 minutes)
+
+**1. Get the tools.** On the repo page click **Code → Download ZIP** and unzip it (or `git clone` the repo).
+
+**2. Point it at your Xbox.** Find your Xbox's IP in Device Portal, then in PowerShell set it once so everything picks it up:
 
 ```powershell
+setx SPIDER_XBOX "\\<your Xbox IP>\DevelopmentFiles\LooseApps\SpiderManRuntime-20261008"
+setx SPIDER_XBOX_IP "<your Xbox IP>"
+```
+
+Open a **fresh** PowerShell window afterward. (The first time you connect to the share, save the login once the way Device Portal → File explorer shows you.)
+
+**3. Build the tool** — uses the C# compiler built into Windows, so no Visual Studio:
+
+```powershell
+cd mod-tools
 .\build.ps1
 ```
 
-## Quick way
+## Go fast (apply a preset)
 
-Close the game on the Xbox and edit `recipes\faster-swinging.txt`. Then run this one command. It builds the mod, copies it to the Xbox's mods folder (replacing the older copy) and applies it to the prepared game:
+**Close the game on the Xbox first**, then:
 
 ```powershell
-.\make-mod.ps1
+.\make-mod.ps1 -Recipe recipes\extreme-test.txt
 ```
 
-Start the game and try it. To undo every mod and restore the game exactly:
+That builds the mod, copies it to your Xbox, and applies it. **Power-cycle the Xbox, launch the game, and swing.** 🎉
+
+For the tasteful version instead, use `recipes\faster-swinging.txt`.
+
+**Undo everything and restore the game exactly:**
 
 ```powershell
 bin\SpiderModTool.exe remove
 ```
 
-This works with the launcher you already have. The launcher's own Mods tab is only in builds from this source, and it does the same thing.
+## Stuck on the fast-travel tutorial?
 
-## Step by step
-
-First save the share login once, as described in Device Portal → File explorer. Then:
-
-```powershell
-bin\SpiderModTool.exe index                       # name the game's assets (one time)
-bin\SpiderModTool.exe find swing                  # search asset names
-bin\SpiderModTool.exe grep GravityFall            # search inside every .config for a value name
-bin\SpiderModTool.exe dump configs\hero\hero_swingconfig.config   # list every value
-bin\SpiderModTool.exe build recipes\faster-swinging.txt bin\faster-swinging.stage
-bin\SpiderModTool.exe apply                        # apply every mod in the Xbox mods folder
-bin\SpiderModTool.exe remove                       # remove all mods, restore the game exactly
-```
-
-Point it at your own Xbox. Either pass the runtime folder each time:
-
-```powershell
-bin\SpiderModTool.exe index \\<Xbox IP>\DevelopmentFiles\LooseApps\SpiderManRuntime-20261008
-```
-
-or set it once so every command and `make-mod.ps1` pick it up:
-
-```powershell
-setx SPIDER_XBOX "\\<Xbox IP>\DevelopmentFiles\LooseApps\SpiderManRuntime-20261008"
-setx SPIDER_XBOX_IP "<Xbox IP>"
-```
-
-You can also pass a PC install folder instead of the share.
-
-## Recipes
-
-A recipe lists assets and edits:
-
-```text
-[configs\hero\hero_swingconfig.config]
-MotionParamsStandard.SpeedParams.TerminalVelocity* *= 1.35
-MotionParamsStandard.GravityParams.GravityFall* *= 1.25
-```
-
-- `Path = value` sets a value.
-- `Path *= factor` multiplies it.
-- `Path += amount` adds to it.
-- `*` matches any text, and `#` starts a comment.
-
-Gravity values are negative, so multiplying by more than 1 pulls harder. Text values can't change, because mods must keep each file the same size.
-
-`recipes\faster-swinging.txt` is a starting point covering swing top speed, swing acceleration, release and jump boosts, fall gravity, momentum boost caps, and web-zip speed.
-
-## Install
-
-Copy the `.stage` file to `\\<Xbox IP>\DevelopmentFiles\SpiderManInstaller-Mods`. Then, in the launcher, open **Mods** and choose **Apply mods**. See [docs/MODS.md](../docs/MODS.md).
-
-Don't share or commit built `.stage` files. They contain game data.
-
-## Fast-travel tutorial fix
-
-Some builds freeze on the early forced fast-travel tutorial: the map opens, zoom and panning work, but holding the confirm button does nothing and never fast-travels. It's a bug in the map UI's eligibility check (it treats the game's offline/emulated state as "can't travel", so the hold timer never starts). The correction is carried in [`../asset-preparation/MapTravelPreparation.cs`](../asset-preparation/MapTravelPreparation.cs), authored upstream by **BBCPrince/UWP-Spider-Launcher** (commit `1865c248`, GPL-3.0).
-
-Close the game, then:
+Some builds freeze on the early **forced fast-travel tutorial** — the map opens, zoom and panning work, but holding the confirm button does nothing. It's a known map-UI bug on offline/emulated builds. Close the game and run:
 
 ```powershell
 bin\SpiderModTool.exe mapfix
 ```
 
-It verifies your game build by hash before changing anything, backs up the `toc`, and is transactional. It only touches your own `Map.gfx` on the console; no game bytecode is distributed here. Power-cycle the Xbox afterward. (If your launcher is build 0.6.0.56 or newer, it already applies this on Play and you don't need this command.)
+It checks your game build, backs up first, and only touches your own `Map.gfx`. (Credit + details below.)
 
-## What this is, and what it isn't
+## Make your own tweaks
 
-- It's **modding tooling** you point at **your own** copy of the game. It reads the files already on your console; it ships **no game assets, configs, textures or bytecode**.
-- Mods are **overlays** — extra archives plus a rerouted index. Your original game files are untouched, backups are kept, and `remove` / restoring the backup `toc` undoes everything. A launcher re-prepare or reinstall will clear mods; just re-apply.
-- Licensed **GPL-3.0**. The config format code is adapted from Tkachov's **ALERT** and **Overstrike** (GPL-3.0); the map fix is from **BBCPrince/UWP-Spider-Launcher** (GPL-3.0). Keep those credits if you fork.
-- **Do not commit** the `bin/` output, the `cache/` asset names, or any `.stage` files — those are built from game data. They're git-ignored for that reason.
+A **recipe** is a plain text file listing which values to change. Example:
+
+```text
+[configs\hero\hero_swingconfig.config]
+MotionParams*.SpeedParams.TerminalVelocity* *= 3      # 3x top swing speed, everywhere
+MotionParams*.GravityParams.GravityFall* *= 1.25      # heavier, snappier gravity
+```
+
+- `Path = value` sets it · `Path *= factor` multiplies · `Path += amount` adds
+- `*` is a wildcard · `#` starts a comment
+- Gravity values are negative, so `*= 1.25` pulls *harder*; `*= 0.75` floats more.
+
+Then rebuild and apply with `.\make-mod.ps1 -Recipe recipes\<your-recipe>.txt`.
+
+To explore what's changeable:
+
+```powershell
+bin\SpiderModTool.exe index                                   # name the game's assets (one time)
+bin\SpiderModTool.exe grep SwingSpeed                         # search inside every config
+bin\SpiderModTool.exe dump configs\hero\hero_swingconfig.config   # list every value in a file
+```
+
+All commands:
+
+```text
+index [game]            Name every asset from the game's own index.
+find <text>             List assets whose name contains <text>.
+grep <text> [game]      Search inside every .config for a value name or type.
+dump <asset> [game]     Write an asset's editable values to a .txt you can read.
+build <recipe> [out]    Turn a recipe into a .stage mod.
+apply [game] [mods]     Apply every mod in the Xbox mods folder.
+remove [game]           Remove all mods, restore the game exactly.
+mapfix [game]           Apply the fast-travel tutorial fix to your own Map.gfx.
+```
+
+`[game]` defaults to the `SPIDER_XBOX` share you set above; you can also pass a PC install folder.
+
+## It's completely reversible
+
+Mods are an overlay — extra archives plus a rerouted index — on top of your prepared game. Your original game files are untouched and backups are kept, so `remove` (or restoring the backup `toc`) puts everything back. A launcher re-prepare or reinstall clears mods; just re-apply.
+
+## Credits & scope
+
+- Modding tooling and recipes are original work; the `.config` format reading is adapted from Tkachov's **ALERT** and **Overstrike** (GPL-3.0).
+- The fast-travel fix (`../asset-preparation/MapTravelPreparation.cs`) is authored upstream by **BBCPrince/UWP-Spider-Launcher** (commit `1865c248`, GPL-3.0), reproduced under the same licence.
+- Licensed **GPL-3.0**. Keep these credits if you fork.
+- **Bring your own game.** This repo ships no game assets, configs, textures or bytecode. Don't commit the `bin/` output, the `cache/` asset names, or any built `.stage` files — they're built from game data and are git-ignored for that reason.
