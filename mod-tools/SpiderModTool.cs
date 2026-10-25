@@ -13,7 +13,9 @@ namespace ModTools
 {
     static class SpiderModTool
     {
-        const string DefaultXbox=@"\\192.168.1.8\DevelopmentFiles\LooseApps\SpiderManRuntime-20261008";
+        // Set the SPIDER_XBOX environment variable to your runtime share, or pass it
+        // as the [game] argument. The placeholder host below is intentionally not a real address.
+        static readonly string DefaultXbox=Environment.GetEnvironmentVariable("SPIDER_XBOX")??@"\\XBOX-IP\DevelopmentFiles\LooseApps\SpiderManRuntime-20261008";
 
         static int Main(string[] args)
         {

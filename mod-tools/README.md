@@ -42,13 +42,20 @@ bin\SpiderModTool.exe apply                        # apply every mod in the Xbox
 bin\SpiderModTool.exe remove                       # remove all mods, restore the game exactly
 ```
 
-If your Xbox has a different IP address, pass the runtime folder:
+Point it at your own Xbox. Either pass the runtime folder each time:
 
 ```powershell
 bin\SpiderModTool.exe index \\<Xbox IP>\DevelopmentFiles\LooseApps\SpiderManRuntime-20261008
 ```
 
-You can also pass a PC install folder.
+or set it once so every command and `make-mod.ps1` pick it up:
+
+```powershell
+setx SPIDER_XBOX "\\<Xbox IP>\DevelopmentFiles\LooseApps\SpiderManRuntime-20261008"
+setx SPIDER_XBOX_IP "<Xbox IP>"
+```
+
+You can also pass a PC install folder instead of the share.
 
 ## Recipes
 

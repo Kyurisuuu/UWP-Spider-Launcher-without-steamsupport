@@ -5,7 +5,7 @@
 # To undo all mods:  bin\SpiderModTool.exe remove
 param(
     [string]$Recipe = (Join-Path $PSScriptRoot 'recipes\faster-swinging.txt'),
-    [string]$Xbox = '192.168.1.8',
+    [string]$Xbox = $(if ($env:SPIDER_XBOX_IP) { $env:SPIDER_XBOX_IP } else { 'XBOX-IP' }),
     [switch]$NoApply
 )
 $ErrorActionPreference = 'Stop'
