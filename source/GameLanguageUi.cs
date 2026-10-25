@@ -17,7 +17,11 @@ namespace SpiderManInstaller
             new GameLanguageOption { Id = p.Language, Label = p.Label, Archive = Path.GetFileName(p.File.Path), Size = p.File.Size }).ToList();
 
         void SettingsTab_Changed(object sender, SelectionChangedEventArgs e)
-        { if (uiReady && e.OriginalSource == MainTabs && MainTabs.SelectedIndex == 3) RefreshGameLanguages(); }
+        {
+            if (!uiReady || e.OriginalSource != MainTabs) return;
+            if (MainTabs.SelectedIndex == 3) RefreshGameLanguages();
+            else if (MainTabs.SelectedIndex == 4) RefreshMods();
+        }
         void RefreshLanguages_Click(object sender, RoutedEventArgs e) => RefreshGameLanguages();
         async void RefreshGameLanguages()
         {

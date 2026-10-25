@@ -21,6 +21,15 @@ namespace SpiderManInstaller
             Directory.CreateDirectory(root);
             return root;
         }
+        // Beside the imports, so mods can be copied over the DevelopmentFiles share.
+        internal static string OpenModsRoot()
+        {
+            string root = AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Xbox"
+                ? @"D:\DevelopmentFiles\SpiderManInstaller-Mods"
+                : Path.Combine(ApplicationData.Current.LocalFolder.Path,"GameMods");
+            Directory.CreateDirectory(root);
+            return root;
+        }
         internal static long FreeBytes(string directory)
         {
             ulong available,total,free;

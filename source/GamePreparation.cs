@@ -178,6 +178,17 @@ namespace SpiderManInstaller
             }
             PreparationEngine.Run(import,RuntimeRoot,PreparationEngine.SharedPayloadRoot(SupportBase),rows,patch,RecipeHash,progress,cancel,generatedRoot);
         }
+        // Mods are layered on the prepared index; the clean copy is kept beside the runtime.
+        static string ModToc=>Path.Combine(RuntimeRoot,"StartupContent","asset_archive","toc");
+        internal const string ModBackupName="mods-original-toc";
+        static string ModBackup=>Path.Combine(RuntimeRoot,ModBackupName);
+        internal static bool ModsApplied()=>File.Exists(ModBackup);
+        internal static AssetPreparation.ModOverlayResult ApplyMods(Action<string> progress)
+        {
+            if(!Ready())throw new IOException("Prepare the game before applying mods.");
+            return AssetPreparation.ModOverlay.Apply(ModToc,ModBackup,AssetPreparation.ModOverlay.FindMods(GameStorage.OpenModsRoot()),progress);
+        }
+        internal static bool RemoveMods()=>AssetPreparation.ModOverlay.Remove(ModToc,ModBackup);
         internal static async Task<bool> Play()
         {
             if(!Ready())throw new IOException("Prepare and verify the game first");

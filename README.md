@@ -6,7 +6,7 @@
 
 An unofficial, experimental UWP launcher for Xbox Developer Mode. Transfer a supported game folder from USB or over your local network, or sign in to Steam to download the supported version you own.
 
-[Getting started](docs/GETTING-STARTED.md) · [Downloads](https://github.com/BBCPrince/UWP-Spider-Launcher/releases) · [Build from source](release/REBUILD-FROM-SOURCE.md) · [Third-party notices](THIRD-PARTY-NOTICES.txt)
+[Getting started](docs/GETTING-STARTED.md) · [Mods](docs/MODS.md) · [Downloads](https://github.com/BBCPrince/UWP-Spider-Launcher/releases) · [Build from source](release/REBUILD-FROM-SOURCE.md) · [Third-party notices](THIRD-PARTY-NOTICES.txt)
 
 > **Latest source: 0.6.0.52**
 >

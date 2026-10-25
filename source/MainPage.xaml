@@ -108,6 +108,16 @@
      <Button Content="Check runtime / repair settings" Click="RepairRuntime_Click" HorizontalAlignment="Left"/>
     </StackPanel></ScrollViewer></Border>
    </PivotItem>
+   <PivotItem Header="Mods" Margin="0,4,0,6">
+    <Border Style="{StaticResource Card}"><ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalScrollMode="Disabled" IsTabStop="False"><StackPanel Spacing="12"><TextBlock Text="Game mods" FontSize="23" FontWeight="SemiBold"/>
+     <TextBlock Text="Copy .stage mods or unpacked stage folders to the mods folder below, then apply them to the prepared game. Mods that replace existing gameplay files, such as traversal configs, are supported. Texture, model and new-asset mods are refused." Style="{StaticResource Note}"/>
+     <TextBlock x:Name="ModFolder" FontSize="15" FontWeight="SemiBold" Foreground="#86D4DF" IsTextSelectionEnabled="True"/>
+     <TextBlock Text="Mods apply in name order; a later mod wins when two change the same file. Rename a mod to start with _ to disable it." Style="{StaticResource Note}"/>
+     <TextBlock x:Name="ModList" FontSize="14" TextWrapping="Wrap"/>
+     <StackPanel Orientation="Horizontal" Spacing="8"><Button x:Name="ApplyModsButton" Content="Apply mods" Click="ApplyMods_Click" Background="#D52F49" Foreground="White"/><Button x:Name="RemoveModsButton" Content="Remove mods" Click="RemoveMods_Click"/><Button Content="Refresh" Click="RefreshMods_Click"/></StackPanel>
+     <TextBlock x:Name="ModStatus" FontSize="13" Foreground="#EEC0CA" TextWrapping="Wrap" Text="Close the game before applying or removing mods. Removing mods restores the prepared game exactly."/>
+    </StackPanel></ScrollViewer></Border>
+   </PivotItem>
   </Pivot>
   <Border Grid.Row="2" BorderBrush="#303746" BorderThickness="0,1,0,0" Padding="0,10,0,0">
    <Grid ColumnSpacing="14"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>

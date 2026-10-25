@@ -33,6 +33,8 @@ namespace SpiderManInstaller
             Collect(Resolve("StartupContent/asset_archive"), candidates);
             Collect(Resolve("PreparedOverlays"), candidates);
             candidates.Add(Resolve("original-asset-toc"));
+            candidates.Add(Resolve(GamePreparation.ModBackupName));
+            candidates.Add(Resolve(GamePreparation.ModBackupName + ".partial"));
             files = candidates.Where(File.Exists).OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList();
             foreach (string file in files) { Check(file); Bytes = checked(Bytes + new FileInfo(file).Length); }
         }
