@@ -43,6 +43,13 @@
 !source/SteamTransfer/*.cs
 
 
+!mod-tools/
+!mod-tools/*.cs
+!mod-tools/*.ps1
+!mod-tools/*.md
+!mod-tools/recipes/
+!mod-tools/recipes/*.txt
+
 !docs/
 !docs/*.md
 !docs/images/

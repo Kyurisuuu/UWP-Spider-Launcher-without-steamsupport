@@ -15,6 +15,10 @@ Mods are untested on the Xbox runtime. Test a small change first and keep the mo
 
 ## Make a mod
 
+The easiest way is [SpiderModTool](../mod-tools/README.md). It builds config mods straight from the files on your Xbox from a simple text recipe, so you don't need a PC copy of the game.
+
+To make a mod by hand instead:
+
 1. Install the game from Steam on your PC.
 2. Use Tkachov's ALERT Assets Browser or Overstrike's Modding Tool to find and extract the config you want to change, then export your change as a `.stage`.
 3. A `.stage` is a ZIP. Assets sit in numbered span folders using either the asset path or its 16-digit hex ID:

@@ -1,0 +1,31 @@
+# Faster swinging, stronger gravity, bigger web-zip boosts.
+# Build:  bin\SpiderModTool.exe build recipes\faster-swinging.txt
+# Edits:  Path = value | Path *= factor | Path += amount.  * matches any text.
+# See every value with:  bin\SpiderModTool.exe dump configs\hero\hero_swingconfig.config
+# Start small; large jumps can break animations or launch Spidey off the map.
+
+[configs\hero\hero_swingconfig.config]
+# Top swing speed (outdoor swinging; Fast is the high-momentum set).
+MotionParamsStandard.SpeedParams.TerminalVelocity* *= 1.35
+MotionParamsFast.SpeedParams.TerminalVelocity* *= 1.35
+# How quickly a swing speeds up, and how much speed release/jump add.
+MotionParamsStandard.SpeedParams.SpeedBoostAccel *= 1.5
+MotionParamsStandard.SpeedParams.SpeedBoostTarget *= 1.5
+MotionParamsStandard.SpeedParams.ReleaseBoostXZ *= 1.3
+MotionParamsStandard.SpeedParams.JumpBoostXZ *= 1.3
+# Falling gravity during swings (values are negative; >1 pulls harder).
+MotionParamsStandard.GravityParams.GravityFall* *= 1.25
+MotionParamsFast.GravityParams.GravityFall* *= 1.25
+# Momentum boost limits.
+MomentumConfig.*BoostCap *= 1.5
+
+[configs\hero\hero_webzipsetup_outdoor.config]
+# Web-zip (point-to-point) speed out of the zip.
+SpeedBoostForward* *= 1.5
+*BoostCap *= 1.4
+SpeedInMax *= 1.3
+*OutSpeedFloor *= 1.3
+
+[configs\hero\hero_webzipsetup_ground.config]
+SpeedBoostForward* *= 1.5
+*BoostCap *= 1.4
