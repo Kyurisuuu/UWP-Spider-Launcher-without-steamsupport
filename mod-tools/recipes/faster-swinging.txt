@@ -1,5 +1,5 @@
-# Faster swinging, floatier gravity, bigger web-zip boosts.
-# Build and send to the Xbox:  .\make-mod.ps1   (then Mods > Apply mods in the launcher)
+# Faster swinging that keeps momentum, bigger web-zip boosts, normal gravity.
+# Build and send to the Xbox:  .\make-mod.ps1   (quit the game on the Xbox first)
 # Edits:  Path = value | Path *= factor | Path += amount.  * matches any text.
 # See every value with:  bin\SpiderModTool.exe dump configs\hero\hero_swingconfig.config
 # Start small; large jumps can break animations or launch Spidey off the map.
@@ -13,12 +13,18 @@ MotionParamsStandard.SpeedParams.SpeedBoostAccel *= 1.5
 MotionParamsStandard.SpeedParams.SpeedBoostTarget *= 1.5
 MotionParamsStandard.SpeedParams.ReleaseBoostXZ *= 1.3
 MotionParamsStandard.SpeedParams.JumpBoostXZ *= 1.3
-# Falling gravity during swings. Below 1 = weaker gravity, so you float more.
-# (0.75 means 75% of normal; 1.25 would make you fall faster.)
-MotionParamsStandard.GravityParams.GravityFall* *= 0.75
-MotionParamsFast.GravityParams.GravityFall* *= 0.75
 # Momentum boost limits.
 MomentumConfig.*BoostCap *= 1.5
+
+# Keep your speed when a swing starts. Share of incoming speed carried into
+# the swing: normally 0.85, and only 0.7 when already going fast. 1 = keep all.
+MotionParamsStandard.SpeedParams.InSpeedCarryover = 1
+MotionParamsFast.SpeedParams.InSpeedCarryover = 1
+# Sideways speed kept when swinging out of a fall (normally 0.66).
+JumpFromFallHorzDamp = 1
+# Momentum fades slower in the air: lower rate, longer wait before it starts.
+MomentumConfig.DecayDataAir[*].DecayRate *= 0.4
+MomentumConfig.DecayDataAir[*].DecayDelay *= 2
 
 [configs\hero\hero_webzipsetup_outdoor.config]
 # Web-zip (point-to-point) speed out of the zip.
@@ -26,8 +32,6 @@ SpeedBoostForward* *= 1.5
 *BoostCap *= 1.4
 SpeedInMax *= 1.3
 *OutSpeedFloor *= 1.3
-# Gravity after chained zips. Below 1 = floatier.
-*FallGravity *= 0.75
 
 [configs\hero\hero_webzipsetup_ground.config]
 SpeedBoostForward* *= 1.5
