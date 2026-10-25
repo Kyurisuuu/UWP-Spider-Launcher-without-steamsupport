@@ -1,24 +1,36 @@
-# Deliberately extreme values, only to check the game is reading mods.
-# Swing outdoors and web-zip: falls should be very slow and swings/zips much faster.
+# Deliberately extreme speed, to check the game is reading mods.
+# Includes the momentum fixes from faster-swinging.txt. Gravity is normal.
 # Not meant for normal play.
 
 [configs\hero\hero_swingconfig.config]
+# Top swing speed and how fast a swing builds up.
 MotionParamsStandard.SpeedParams.TerminalVelocity* *= 3
 MotionParamsFast.SpeedParams.TerminalVelocity* *= 3
 MotionParamsStandard.SpeedParams.SpeedBoostAccel *= 3
 MotionParamsStandard.SpeedParams.SpeedBoostTarget *= 3
-MotionParamsStandard.SpeedParams.ReleaseBoostXZ *= 2.5
-MotionParamsStandard.SpeedParams.JumpBoostXZ *= 2.5
-MotionParamsStandard.GravityParams.GravityFall* *= 0.2
-MotionParamsFast.GravityParams.GravityFall* *= 0.2
 MomentumConfig.*BoostCap *= 3
+
+# Speed coming out of a swing (letting go, or jumping off the web).
+MotionParamsStandard.SpeedParams.ReleaseBoostXZ *= 2.5
+MotionParamsFast.SpeedParams.ReleaseBoostXZ *= 2.5
+MotionParamsStandard.SpeedParams.JumpBoostXZ *= 2.5
+MotionParamsFast.SpeedParams.JumpBoostXZ *= 2.5
+MomentumConfig.SwingReleaseData.ReleaseData.Boost *= 3
+MomentumConfig.SwingReleaseData.JumpData.Boost *= 2
+
+# Keep all incoming speed when a swing starts (normally 0.85, or 0.7 when fast).
+MotionParamsStandard.SpeedParams.InSpeedCarryover = 1
+MotionParamsFast.SpeedParams.InSpeedCarryover = 1
+JumpFromFallHorzDamp = 1
+# Momentum fades slower in the air.
+MomentumConfig.DecayDataAir[*].DecayRate *= 0.4
+MomentumConfig.DecayDataAir[*].DecayDelay *= 2
 
 [configs\hero\hero_webzipsetup_outdoor.config]
 SpeedBoostForward* *= 3
 *BoostCap *= 3
 SpeedInMax *= 2
 *OutSpeedFloor *= 2.5
-*FallGravity *= 0.2
 
 [configs\hero\hero_webzipsetup_ground.config]
 SpeedBoostForward* *= 3
