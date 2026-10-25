@@ -12,7 +12,23 @@ Uses the C# compiler that comes with Windows, so Visual Studio isn't needed.
 .\build.ps1
 ```
 
-## Use
+## Quick way
+
+Close the game on the Xbox and edit `recipes\faster-swinging.txt`. Then run this one command. It builds the mod, copies it to the Xbox's mods folder (replacing the older copy) and applies it to the prepared game:
+
+```powershell
+.\make-mod.ps1
+```
+
+Start the game and try it. To undo every mod and restore the game exactly:
+
+```powershell
+bin\SpiderModTool.exe remove
+```
+
+This works with the launcher you already have. The launcher's own Mods tab is only in builds from this source, and it does the same thing.
+
+## Step by step
 
 First save the share login once, as described in Device Portal → File explorer. Then:
 

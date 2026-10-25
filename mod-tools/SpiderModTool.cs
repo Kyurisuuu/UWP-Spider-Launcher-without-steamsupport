@@ -24,6 +24,8 @@ namespace ModTools
                     case "find":Find(Need(args,1,"pattern"),Opt(args,2,Cache()));return 0;
                     case "dump":Dump(Need(args,1,"asset path"),Opt(args,2,DefaultXbox),Opt(args,3,Cache()));return 0;
                     case "build":Build(Need(args,1,"recipe"),Opt(args,2,null));return 0;
+                    case "apply":Apply(Opt(args,1,DefaultXbox),Opt(args,2,null));return 0;
+                    case "remove":Remove(Opt(args,1,DefaultXbox));return 0;
                 }
                 Usage();return 1;
             } catch(Exception e) {
@@ -39,6 +41,9 @@ namespace ModTools
   find <text>             List named assets containing <text>.
   dump <asset> [game]     Write an asset's editable values to <asset name>.txt.
   build <recipe> [out]    Apply a recipe's edits and pack a .stage mod.
+  apply [game] [mods]     Apply every mod in the Xbox mods folder to the prepared game.
+  remove [game]           Remove applied mods and restore the prepared game exactly.
+                          Close the game on the Xbox before apply or remove.
 
 [game] is the Xbox runtime folder over the network share (default
 "+DefaultXbox+@")
@@ -149,6 +154,34 @@ or a PC install folder containing asset_archive. Run index first.");
             string output=Path.GetFileName(e.Path)+".txt";
             File.WriteAllText(output,"# "+e.Path+"\n"+config.Dump());
             Console.WriteLine("Wrote "+config.Values.Count+" values to "+Path.GetFullPath(output));
+        }
+
+        // Same files and backup name the launcher's Mods tab uses, so either can apply or remove.
+        static void Prepared(string root,out string toc,out string backup)
+        {
+            if(!File.Exists(Path.Combine(root,"prepared-receipt.txt")))throw new FileNotFoundException("No prepared game at "+root+". Prepare the game in the launcher first.");
+            toc=Path.Combine(root,"StartupContent","asset_archive","toc");backup=Path.Combine(root,"mods-original-toc");
+        }
+        static string ModsFolder(string root)
+        {
+            // <DevelopmentFiles>\LooseApps\<runtime> -> <DevelopmentFiles>\SpiderManInstaller-Mods
+            var parent=Directory.GetParent(Path.GetFullPath(root).TrimEnd('\\'));
+            if(parent==null||parent.Parent==null)throw new ArgumentException("Pass the mods folder as well");
+            return Path.Combine(parent.Parent.FullName,"SpiderManInstaller-Mods");
+        }
+        static void Apply(string root,string mods)
+        {
+            string toc,backup;Prepared(root,out toc,out backup);
+            if(mods==null)mods=ModsFolder(root);
+            var list=ModOverlay.FindMods(mods);
+            foreach(var m in list)Console.WriteLine("  "+Path.GetFileName(m));
+            var result=ModOverlay.Apply(toc,backup,list,Console.WriteLine);
+            Console.WriteLine("Applied "+result.Assets+" modded file(s) from "+result.Mods+" mod(s). Start the game to try them.");
+        }
+        static void Remove(string root)
+        {
+            string toc,backup;Prepared(root,out toc,out backup);
+            Console.WriteLine(ModOverlay.Remove(toc,backup)?"Mods removed. The prepared game is restored.":"No mods were applied.");
         }
 
         // Recipe:
