@@ -24,6 +24,7 @@ namespace ModTools
                     case "find":Find(Need(args,1,"pattern"),Opt(args,2,Cache()));return 0;
                     case "dump":Dump(Need(args,1,"asset path"),Opt(args,2,DefaultXbox),Opt(args,3,Cache()));return 0;
                     case "build":Build(Need(args,1,"recipe"),Opt(args,2,null));return 0;
+                    case "grep":Grep(Need(args,1,"text"),Opt(args,2,DefaultXbox));return 0;
                     case "apply":Apply(Opt(args,1,DefaultXbox),Opt(args,2,null));return 0;
                     case "remove":Remove(Opt(args,1,DefaultXbox));return 0;
                 }
@@ -40,6 +41,7 @@ namespace ModTools
   index [game]            Name every asset from the game's original index and dag.
   find <text>             List named assets containing <text>.
   dump <asset> [game]     Write an asset's editable values to <asset name>.txt.
+  grep <text> [game]      Search inside every .config for value names or types containing <text>.
   build <recipe> [out]    Apply a recipe's edits and pack a .stage mod.
   apply [game] [mods]     Apply every mod in the Xbox mods folder to the prepared game.
   remove [game]           Remove applied mods and restore the prepared game exactly.
@@ -145,6 +147,28 @@ or a PC install folder containing asset_archive. Run index first.");
                 if(++shown==200) { Console.WriteLine("… more results; narrow the search.");break; }
             }
             if(shown==0)Console.WriteLine("No matches.");
+        }
+
+        // Reads every .config once, grouped by archive so each archive is opened a single time.
+        static void Grep(string text,string root)
+        {
+            string indexed;var game=Locate(root);int found=0,read=0;
+            var configs=Entries(Cache(),out indexed).Where(e=>e.Path.EndsWith(".config",StringComparison.OrdinalIgnoreCase)).GroupBy(e=>e.Archive);
+            foreach(var archive in configs) {
+                using(var dsar=new DsarReader(Path.Combine(game.Archives,archive.Key)))
+                    foreach(var e in archive.OrderBy(x=>x.Offset)) {
+                        ConfigFile config;
+                        try { config=new ConfigFile(dsar.Read(e.Offset,e.Size));read++; } catch(InvalidDataException) { continue; }
+                        bool typeHit=config.TypeName.IndexOf(text,StringComparison.OrdinalIgnoreCase)>=0;
+                        var hits=config.Values.Where(v=>typeHit||v.Path.IndexOf(text,StringComparison.OrdinalIgnoreCase)>=0).ToList();
+                        if(hits.Count==0)continue;
+                        Console.WriteLine("["+e.Path+"]  ("+config.TypeName+")");
+                        foreach(var v in hits.Take(12))Console.WriteLine("  "+v.Path+" = "+v.Text);
+                        if(hits.Count>12)Console.WriteLine("  … "+(hits.Count-12)+" more; use dump");
+                        found++;
+                    }
+            }
+            Console.WriteLine(found+" config(s) matched out of "+read+" searched.");
         }
 
         static void Dump(string asset,string root,string cache)

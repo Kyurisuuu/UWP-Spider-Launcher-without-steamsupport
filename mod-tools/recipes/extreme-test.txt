@@ -35,3 +35,15 @@ SpeedInMax *= 2
 [configs\hero\hero_webzipsetup_ground.config]
 SpeedBoostForward* *= 3
 *BoostCap *= 3
+
+# Main hero traversal settings (the file name is a leftover from Sunset Overdrive).
+[configs\herotraversalconfigsunsetoverdrive\herotraversalconfigsunsetoverdrive.config]
+# Point launch: launch speed and the bonus for timing it, all directions. 2x.
+PointLaunchConfig.ExitData*.LaunchSpeed *= 2
+PointLaunchConfig.ExitData*.LaunchSpeedBonus *= 2
+# Wall-run corner jump: sideways speed around the corner, and how hard it accelerates. 2x.
+WallRunConfig.CornerJumpParams.HorzSpeed *= 2
+JumpConfigs.WallRunCornerHookConfig.StandardData.VelocityAccelAccel* *= 2
+# Charge jump (the game calls it a parkour launch): top launch speed and height. 2x.
+JumpConfigs.ParkourLaunchJumpSpeed.*MaxLaunchSpeed *= 2
+JumpConfigs.ParkourLaunchConfig.*JumpHeight *= 2
